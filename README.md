@@ -1,1 +1,1 @@
-# JavaTemplate
+# Bad Twitter Clone
