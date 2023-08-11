@@ -47,8 +47,7 @@ public class UserModel {
         try {
             Connection connection = DBConnection.getConnection();
             
-            String query = "insert into user ( username, password ) "
-                    + " values ( ?, ? )";
+            String query = "insert into user (username, password) values (?, ?)";
             
             PreparedStatement statement = connection.prepareStatement(query);
             
@@ -58,6 +57,48 @@ public class UserModel {
             
             statement.execute();
             
+            statement.close();
+            connection.close();
+            
+        } 
+        catch (Exception ex){
+            System.out.println(ex);
+        }
+    }
+    
+    public static void updateUser(User user) {
+        try {
+            Connection connection = DBConnection.getConnection();
+            
+            String query = "update user set username = ?, password  = ? where id = ?";
+            
+            PreparedStatement statement = connection.prepareStatement(query);
+            
+            // indexing starts with 1
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
+            statement.setInt(3, user.getId());
+            
+            statement.execute();
+            statement.close();
+            connection.close();
+            
+        } 
+        catch (Exception ex){
+            System.out.println(ex);
+        }
+    }
+    
+    public static void deleteUser(User user) {
+        try {
+            Connection connection = DBConnection.getConnection();
+            
+            String query = "delete from user where id = ?";
+            
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, user.getId());
+            
+            statement.execute();
             statement.close();
             connection.close();
             
