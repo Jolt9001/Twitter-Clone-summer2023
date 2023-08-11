@@ -7,7 +7,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h2>Users></h2>
+        <h2>Users</h2>
         <table>
             <tr>
                 <th>ID</th>
@@ -31,7 +31,7 @@
             <input type="password" name="password"/><br>
             <input type="button" name="action" action="createUser"/>
             
-            <input type="submit" value="login"/>
+            <input type="submit" value="Create User"/>
         </form>
         
         <h2>Update user</h2>
@@ -44,7 +44,7 @@
             <input type="password" name="password"/><br>
             <input type="button" name="action" action="updateUser"/>
             
-            <input type="submit" value="login"/>
+            <input type="submit" value="Update User"/>
         </form>
         
         <h2>Delete user</h2>
@@ -53,7 +53,7 @@
             <input type="text" name="id"/><br>
             <input type="button" name="action" action="deleteUser"/>
             
-            <input type="submit" value="login"/>
+            <input type="submit" value="Delete User"/>
         </form>
     </body>
 </html>

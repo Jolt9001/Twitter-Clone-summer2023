@@ -2,7 +2,6 @@
 package twitter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -12,11 +11,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class Twitter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        
+        HttpSession session = request.getSession();
+        String sessionUsername = (String)session.getAttribute("username");
+        
+        if (sessionUsername == null) {
+            // message?
+            response.sendRedirect("Login");
+            return;
+        }
         
         if (action == null) {
             action = "listUsers";
@@ -46,7 +55,7 @@ public class Twitter extends HttpServlet {
             
             response.sendRedirect("Twitter");
             } catch (Exception ex) {
-                ExceptionPage(ex, request, response);
+                exceptionPage(ex, request, response);
             }
         } else if (action.equalsIgnoreCase("updateUser")) {
             String id = request.getParameter("id");
@@ -67,7 +76,7 @@ public class Twitter extends HttpServlet {
             
             response.sendRedirect("Twitter");
             } catch (Exception ex) {
-                ExceptionPage(ex, request, response);
+                exceptionPage(ex, request, response);
             } 
         } else if (action.equalsIgnoreCase("deleteUser")) {
             String id = request.getParameter("id");
@@ -84,12 +93,35 @@ public class Twitter extends HttpServlet {
             
             response.sendRedirect("Twitter");
             } catch (Exception ex) {
-                ExceptionPage(ex, request, response);
+                exceptionPage(ex, request, response);
             } 
+        } else if (action.equalsIgnoreCase("login")) {
+            String username = request.getParameter("username");
+            String password = request.getParameter("pasword");
+            if (username == null || password == null){
+                String error = "Username or Password is invalid.";
+                request.setAttribute("error", error);
+                String url = "/error.jsp";
+                getServletContext().getRequestDispatcher(url).forward(request, response);
+            }
+            
+            try {
+                String hashedPassword = toHexString(getSHA(password));
+                User user = new User(0, username, hashedPassword);
+                
+                if (UserModel.login(user)) {
+                    
+                }
+                response.sendRedirect("Twitter");
+            } catch (Exception ex) {
+                exceptionPage(ex, request, response);
+            } 
+        } else {
+            response.sendRedirect("Twitter");
         }
     }
 
-    private void ExceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void exceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String error = ex.toString();
         request.setAttribute("error", error);
         String url = "/error.jsp";

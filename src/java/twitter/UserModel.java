@@ -13,6 +13,36 @@ import java.util.ArrayList;
  */
 public class UserModel {
     
+    public static boolean login (User user) {
+        try {
+            Connection connection = DBConnection.getConnection();
+            
+            String query = "selectid, username, password from user "
+                    + "where username = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            
+            statement.setString(1, user.getUsername());
+            
+            ResultSet results = statement.executeQuery();
+            String password = "";
+            if (results.next()) {
+                int id = results.getInt("id");
+                String username = results.getString("username");
+                password = results.getString("password");
+            }
+            
+            results.close();
+            statement.close();
+            connection.close();
+            
+            return !password.isEmpty() && user.getPassword().equals(password);
+        } 
+        catch (Exception ex){
+            System.out.println(ex);
+            return false;
+        }
+    }
+    
     public static ArrayList<User> getUsers() {
         ArrayList<User> users = new ArrayList<>();
         try {
