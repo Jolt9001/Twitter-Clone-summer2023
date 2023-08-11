@@ -26,10 +26,32 @@
         <h2>Create user</h2>
         <form action="Twitter" method="post">
             <label>Username</label>
-            <input type="text" name="username" /><br>
+            <input type="text" name="username"/><br>
             <label>Password</label>
             <input type="password" name="password"/><br>
             <input type="button" name="action" action="createUser"/>
+            
+            <input type="submit" value="login"/>
+        </form>
+        
+        <h2>Update user</h2>
+        <form action="Twitter" method="post">
+            <label>UID</label>
+            <input type="text" name="id"/><br>
+            <label>Username</label>
+            <input type="text" name="username"/><br>
+            <label>Password</label>
+            <input type="password" name="password"/><br>
+            <input type="button" name="action" action="updateUser"/>
+            
+            <input type="submit" value="login"/>
+        </form>
+        
+        <h2>Delete user</h2>
+        <form action="Twitter" method="post">
+            <label>UID</label>
+            <input type="text" name="id"/><br>
+            <input type="button" name="action" action="deleteUser"/>
             
             <input type="submit" value="login"/>
         </form>
