@@ -13,7 +13,7 @@
     </head>
     <body>
         <h2>Login</h2>
-        <form action="Twitter" method="post">
+        <form action="Login" method="post">
             <label>Username</label>
             <input type="text" name="username"/><br>
             <label>Password</label>
@@ -24,7 +24,7 @@
         </form>
         
         <h2>Register new account</h2>
-        <form action="Twitter" method="post">
+        <form action="Login" method="post">
             <label>Username</label>
             <input type="text" name="username"/><br>
             <label>Password</label>
