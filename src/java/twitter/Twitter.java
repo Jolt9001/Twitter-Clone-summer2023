@@ -11,12 +11,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 public class Twitter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        
+        if (!Login.ensureLoginRedirect(request)) {
+            request.setAttribute("message", "Please log in to continue.");
+            response.sendRedirect("Login");
+            return;
+        }
         
         if (action == null) {
             action = "listUsers";

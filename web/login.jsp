@@ -12,6 +12,7 @@
         <title>Login page</title>
     </head>
     <body>
+        <h1>${message}</h1>
         <h2>Login</h2>
         <form action="Login" method="post">
             <label>Username</label>

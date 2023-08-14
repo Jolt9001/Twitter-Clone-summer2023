@@ -17,7 +17,7 @@ public class UserModel {
         try {
             Connection connection = DBConnection.getConnection();
             
-            String query = "selectid, username, password from user "
+            String query = "select id, username, password from user "
                     + "where username = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             
@@ -43,6 +43,38 @@ public class UserModel {
         }
     }
     
+    public static User getUser(String username) {
+        User user = null;
+        
+        try {
+            String query = "select id, username, password, filename from user "
+                    + "where username = ?";
+            
+            Connection connection = DBConnection.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, username);
+            
+            ResultSet results = statement.executeQuery(query);
+            
+            while (results.next()) {
+                int id = results.getInt("id");
+                String password = results.getString("password");
+                String filename = results.getString("filename");
+                
+                user = new User(id, username, password, filename);
+            }
+            
+            results.close();
+            statement.close();
+            connection.close();
+            
+        } 
+        catch (Exception ex){
+            System.out.println(ex);
+        }
+        return user;
+    }
+    
     public static ArrayList<User> getUsers() {
         ArrayList<User> users = new ArrayList<>();
         try {
@@ -56,8 +88,9 @@ public class UserModel {
                 int id = results.getInt("id");
                 String username = results.getString("string");
                 String password = results.getString("password");
+                String filename = results.getString("filename");
                 
-                User user = new User(id, username, password);
+                User user = new User(id, username, password, filename);
                 
                 users.add(user);
             }

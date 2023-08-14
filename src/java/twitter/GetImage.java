@@ -5,17 +5,22 @@
 package twitter;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author Owner
  */
-public class Profile extends HttpServlet {
+public class GetImage extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -28,20 +33,40 @@ public class Profile extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String username = request.getParameter("username");
         
-        if (!Login.ensureLoginRedirect(request)) {
-            request.setAttribute("message", "Please log in to continue.");
-            response.sendRedirect("Login");
-            return;
+        try {
+            Connection connection = DBConnection.getConnection();
+            String preparedSQL = "select imrge, filename from user where username = ? ";
+            PreparedStatement preparedStatement = connection.prepareStatement(preparedSQL);
+            
+            preparedStatement.setString(1, username);
+            ResultSet result = preparedStatement.executeQuery();
+            Blob blob = null;
+            String filename = "";
+            while (result.next()) {
+                blob = result.getBlob("image");
+                filename = result.getString("filename");
+            }
+            
+            byte[] imageBytes = blob.getBytes(1, (int)blob.length());
+            
+            preparedStatement.close();
+            connection.close();
+            
+            String contentType = this.getServletContext().getMimeType(filename);
+            
+            response.setHeader("Content-Type", contentType);
+            
+            OutputStream os = response.getOutputStream();
+            os.write(imageBytes);
+            os.flush();
+            os.close();
+        } catch (Exception ex) {
+            request.setAttribute("error", ex.toString());
+            String url = "/error.jsp";
+            getServletContext().getRequestDispatcher(url).forward(request, response);
         }
-        
-        HttpSession session = request.getSession();
-        String username = (String)session.getAttribute("username");
-        User user = UserModel.getUser(username);
-        
-        request.setAttribute("filename", user.getFilename());
-        String url = "/profile.jsp";
-        getServletContext().getRequestDispatcher(url).forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
