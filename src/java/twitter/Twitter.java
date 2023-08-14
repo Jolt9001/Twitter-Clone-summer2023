@@ -18,15 +18,6 @@ public class Twitter extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         
-        HttpSession session = request.getSession();
-        String sessionUsername = (String)session.getAttribute("username");
-        
-        if (sessionUsername == null) {
-            // message?
-            response.sendRedirect("Login");
-            return;
-        }
-        
         if (action == null) {
             action = "listUsers";
         }

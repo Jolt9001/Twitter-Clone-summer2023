@@ -94,6 +94,15 @@ public class Login extends HttpServlet {
         getServletContext().getRequestDispatcher(url).forward(request, response);
     }
     
+    public static boolean ensureLoginRedirect(){
+        HttpSession session = request.getSession();
+        String sessionUsername = (String)session.getAttribute("username");
+        if (sessionUsername == null) {
+            // message?
+            response.sendRedirect("Login");
+            return;
+        }
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
