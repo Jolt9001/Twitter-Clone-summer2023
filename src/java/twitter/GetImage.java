@@ -6,7 +6,6 @@ package twitter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +36,7 @@ public class GetImage extends HttpServlet {
         
         try {
             Connection connection = DBConnection.getConnection();
-            String preparedSQL = "select imrge, filename from user where username = ? ";
+            String preparedSQL = "select image, filename from user where username = ? ";
             PreparedStatement preparedStatement = connection.prepareStatement(preparedSQL);
             
             preparedStatement.setString(1, username);
