@@ -36,12 +36,19 @@ public class Login extends HttpServlet {
             getServletContext().getRequestDispatcher(url).forward(request, response);
         } else if (action.equalsIgnoreCase("login")) {
             String username = request.getParameter("username");
-            String password = request.getParameter("pasword");
+            String password = request.getParameter("password");
             if (username == null || password == null){
-                String error = "Username or Password is invalid.";
-                request.setAttribute("error", error);
-                String url = "/error.jsp";
-                getServletContext().getRequestDispatcher(url).forward(request, response);
+                if (username == null) {
+                    String e = "Username is invalid.";
+                    request.setAttribute("error", e);
+                    String url = "/error.jsp";
+                    getServletContext().getRequestDispatcher(url).forward(request, response);
+                } else {
+                    String e = "Password is invalid.";
+                    request.setAttribute("error", e);
+                    String url = "/error.jsp";
+                    getServletContext().getRequestDispatcher(url).forward(request, response);
+                }
             }
             
             try {
@@ -51,6 +58,14 @@ public class Login extends HttpServlet {
                 if (UserModel.login(user)) {
                     HttpSession session = request.getSession();
                     session.setAttribute("username", username); 
+                    
+                    if (user.getPassword() != UserModel.getUser(username).getPassword()) {
+                        String error = "Password is incorrect.";
+                        request.setAttribute("error", error);
+                        String url = "/error.jsp";
+                        getServletContext().getRequestDispatcher(url).forward(request, response);
+                    }
+                    
                     response.sendRedirect("Twitter");
                 } else {
                     String error = "invalid username or password";
@@ -63,7 +78,7 @@ public class Login extends HttpServlet {
             } 
         } else if (action.equalsIgnoreCase("register")) {
             String username = request.getParameter("username");
-            String password = request.getParameter("pasword");
+            String password = request.getParameter("password");
             
             if (username == null || password == null) {
                 String error = "username or password missing.";
@@ -80,7 +95,7 @@ public class Login extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("username", username); 
             
-                response.sendRedirect("Login");
+                response.sendRedirect("Twitter");
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             }
