@@ -106,34 +106,6 @@ public class Twitter extends HttpServlet {
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             } 
-        } else if (action.equalsIgnoreCase("login")) {
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-            
-            if (username == null || password == null){
-                if (username == null) {
-                    String e = "Username is invalid.";
-                    request.setAttribute("error", e);
-                    String url = "/error.jsp";
-                    getServletContext().getRequestDispatcher(url).forward(request, response);
-                } else {
-                    String e = "Password is invalid.";
-                    request.setAttribute("error", e);
-                    String url = "/error.jsp";
-                    getServletContext().getRequestDispatcher(url).forward(request, response);
-                }
-            }
-            
-            try {
-                String hashedPassword = toHexString(getSHA(password));
-                User user = new User(0, username, hashedPassword);
-                
-                if (UserModel.login(user)) {
-                    response.sendRedirect("Twitter");
-                }
-            } catch (Exception ex) {
-                exceptionPage(ex, request, response);
-            } 
         } else {
             response.sendRedirect("Twitter");
         }
