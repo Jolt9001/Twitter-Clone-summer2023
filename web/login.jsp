@@ -19,9 +19,7 @@
             <input type="text" name="username"/><br>
             <label>Password</label>
             <input type="password" name="password"/><br>
-            <input type="button" name="action" action="login"/>
-            
-            <input type="submit" value="Login"/>
+            <input type="submit" name="action" action="login" value="Login"/>
         </form>
         
         <h2>Register new account</h2>
@@ -30,9 +28,7 @@
             <input type="text" name="username"/><br>
             <label>Password</label>
             <input type="password" name="password"/><br>
-            <input type="button" name="action" action="register"/>
-            
-            <input type="submit" value="Register"/>
+            <input type="submit" name="action" action="createUser" value="Register"/>
         </form>
     </body>
 </html>
