@@ -16,22 +16,21 @@ public class Tweet {
     private Blob attachment;
     private int likes;
 
-    public Tweet(int id, String text, Timestamp timestamp, int user_id, Blob attachment) {
+    public Tweet(int id, String text, Timestamp timestamp, int user_id, Blob attachment, int likes) {
         this.id = id;
         this.text = text;
         this.timestamp = timestamp;
         this.user_id = user_id;
         this.attachment = attachment;
-        this.likes = 0;
+        this.likes = likes;
     }
     
-    
-    public Tweet(int id, String text, Timestamp timestamp, int user_id) {
+    public Tweet(int id, String text, Timestamp timestamp, int user_id, int likes) {
         this.id = id;
         this.text = text;
         this.timestamp = timestamp;
         this.user_id = user_id;
-        this.likes = 0;
+        this.likes = likes;
         this.attachment = null;
     }
 

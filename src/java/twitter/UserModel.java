@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -33,7 +34,7 @@ public class UserModel {
             statement.close();
             connection.close();
             
-            return !password.isEmpty() && user.getPassword().equals(password);
+            return !(password.isEmpty() || !user.getPassword().equals(password));
         } 
         catch (Exception ex){
             System.out.println(ex);
@@ -42,13 +43,13 @@ public class UserModel {
     }
     
     public static User getUser(String username) {
-        User user = null;
-        
+        User user = new User(0, username, "", "");
         try {
             String query = "select id, username, password, filename from user where username = ?";
             
             Connection connection = DBConnection.getConnection();
             PreparedStatement statement = connection.prepareStatement(query);
+            
             statement.setString(1, username);
             
             ResultSet results = statement.executeQuery(query);
@@ -57,19 +58,21 @@ public class UserModel {
                 int id = results.getInt("id");
                 String password = results.getString("password");
                 String filename = results.getString("filename");
-                
-                user = new User(id, username, password, filename);
+
+                user.setId(id);
+                user.setPassword(password);
+                user.setFilename(filename);
             }
             
             results.close();
             statement.close();
             connection.close();
-            
+            return user;
         } 
         catch (Exception ex){
             System.out.println(ex);
+            return user;
         }
-        return user;
     }
     
     public static ArrayList<User> getUsers() {
@@ -88,6 +91,10 @@ public class UserModel {
                 String filename = results.getString("filename");
                 
                 User user = new User(id, username, password, filename);
+                user.setId(id);
+                user.setPassword(password);
+                user.setUsername(username);
+                user.setFilename(filename);
                 
                 users.add(user);
             }
@@ -95,7 +102,6 @@ public class UserModel {
             results.close();
             statement.close();
             connection.close();
-            
         } 
         catch (Exception ex){
             System.out.println(ex);
@@ -109,15 +115,14 @@ public class UserModel {
             
             String query = "insert into user (username, password) values (?, ?)";
             
-            PreparedStatement statement = connection.prepareStatement(query);
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, user.getUsername());
+                statement.setString(2, user.getPassword());
+                statement.setInt(3, user.getId());
+                statement.execute();
+                statement.close();
+            }
             
-            // indexing starts with 1
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getPassword());
-            
-            statement.execute();
-            
-            statement.close();
             connection.close();
         } 
         catch (Exception ex){
@@ -129,7 +134,7 @@ public class UserModel {
         try {
             Connection connection = DBConnection.getConnection();
             
-            String query = "update user set username = ?, password  = ? where id = ?";
+            String query = "update `user` set username = ?, password  = ? where id = ?";
             
             PreparedStatement statement = connection.prepareStatement(query);
             
@@ -151,7 +156,6 @@ public class UserModel {
     public static void deleteUser(User user) {
         try {
             Connection connection = DBConnection.getConnection();
-            
             String query = "delete from user where id = ?";
             
             PreparedStatement statement = connection.prepareStatement(query);
@@ -167,26 +171,7 @@ public class UserModel {
         }
     }
     
-    public static void followUser(User user1, User user2) {
-        try {
-            Connection connection = DBConnection.getConnection();
-            
-            String query = "insert into following (followedbyuid, followinguid) values (?, ?)";
-            
-            PreparedStatement statement = connection.prepareStatement(query);
-            
-            // indexing starts with 1
-            statement.setString(1, Integer.toString(user1.getId()));
-            statement.setString(2, Integer.toString(user2.getId()));
-            
-            statement.execute();
-            
-            statement.close();
-            connection.close();
-            
-        } 
-        catch (Exception ex){
-            System.out.println(ex);
-        }
+    public static void ensureLoginRedirect(HttpServletRequest request) {
+            Login.ensureLoginRedirect(request);
     }
 }

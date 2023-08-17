@@ -2,59 +2,71 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
+
+<script type="text/javascript">
+    function switchFollow() {
+        var elem = document.getElementById("follow").onclick;
+        if (elem.value == "Follow User") {
+            elem.value = "Unfollow User";
+            elem.action = "unfollowUser";
+        }
+        else {
+            "Follow User";
+        }
+    }
+</script>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>User page</title>
     </head>
     <body>
         <h2>Users</h2>
         <table>
             <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Password Hash</th>
+                <th>ID | </th>
+                <th>Username | </th>
+                <th>Password Hash | </th>
+                <th>Profile Picture Filename | </th>
             </tr>
             <c:forEach var="user" items="${users}">
             <tr>
-                <td><c:out value="$user.id" /></td>
-                <td><c:out value="$user.username" /></td>
-                <td><c:out value="$user.password" /></td>
+                <td><c:out value="${user.id}"/></td>
+                <td><c:out value=" | ${user.username}"/></td>
+                <td><c:out value=" | ${user.password}"/></td>
+                <td><c:out value=" | ${user.filename}"/></td>
+                <td>
+                    <input id="follow" type="submit" name="action" action="followUser" value="Follow User" onClick="switchFollow()"/>
+                </td>
             </tr>
             </c:forEach>
         </table>
         
         <h2>Create user</h2>
-        <form action="Twitter" method="post">
+        <form action="UserManager" method="post">
             <label>Username</label>
             <input type="text" name="username"/><br>
             <label>Password</label>
             <input type="password" name="password"/><br>
-            <input type="button" name="action" action="createUser"/>
-            
-            <input type="submit" value="Create User"/>
+            <input type="submit" name="action" action="createUser" value="Create User"/>
         </form>
         
         <h2>Update user</h2>
-        <form action="Twitter" method="post">
+        <form action="UserManager" method="post">
             <label>UID</label>
             <input type="text" name="id"/><br>
             <label>Username</label>
             <input type="text" name="username"/><br>
             <label>Password</label>
             <input type="password" name="password"/><br>
-            <input type="button" name="action" action="updateUser"/>
-            
-            <input type="submit" value="Update User"/>
+            <input type="submit" name="action" action="updateUser" value="Update User"/>
         </form>
         
         <h2>Delete user</h2>
-        <form action="Twitter" method="post">
+        <form action="UserManager" method="post">
             <label>UID</label>
             <input type="text" name="id"/><br>
-            <input type="button" name="action" action="deleteUser"/>
-            
-            <input type="submit" value="Delete User"/>
+            <input type="submit" name="action" action="deleteUser" value="Delete User"//>
         </form>
     </body>
 </html>

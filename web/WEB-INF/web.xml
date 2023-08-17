@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <servlet>
-        <servlet-name>twitter</servlet-name>
+        <servlet-name>Twitter</servlet-name>
         <servlet-class>twitter.Twitter</servlet-class>
     </servlet>
     <servlet>
@@ -24,9 +24,17 @@
         <servlet-name>GetAttachment</servlet-name>
         <servlet-class>twitter.GetAttachment</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetTweet</servlet-name>
+        <servlet-class>twitter.GetTweet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserManager</servlet-name>
+        <servlet-class>twitter.UserManager</servlet-class>
+    </servlet>
     <servlet-mapping>
-        <servlet-name>twitter</servlet-name>
-        <url-pattern>/twitter</url-pattern>
+        <servlet-name>Twitter</servlet-name>
+        <url-pattern>/Twitter</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
@@ -45,12 +53,16 @@
         <url-pattern>/GetImage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetAttachment</servlet-name>
-        <url-pattern>/GetAttachment</url-pattern>
+        <servlet-name>GetTweet</servlet-name>
+        <url-pattern>/GetTweet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserManager</servlet-name>
+        <url-pattern>/UserManager</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
-            30
+            1440
         </session-timeout>
     </session-config>
 </web-app>

@@ -6,7 +6,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,99 +18,18 @@ public class Twitter extends HttpServlet {
         
         if (!Login.ensureLoginRedirect(request)) {
             request.setAttribute("message", "Please log in to continue.");
-            response.sendRedirect("Login");
-            return;
-        }
-        
-        if (action == null) {
-            action = "listUsers";
-        }
-        
-        if (action.equalsIgnoreCase("listUsers")) {
-            ArrayList<User> users = UserModel.getUsers();
-            request.setAttribute("users", users);
-        
-            String url = "/users.jsp";
-            getServletContext().getRequestDispatcher(url).forward(request, response);
-        } else if (action.equalsIgnoreCase("createUser")) {
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-            
-            if (username == null || password == null) {
-                String error = "username or password missing.";
-                request.setAttribute("error", error);
-                String url = "/error.jsp";
-                getServletContext().getRequestDispatcher(url).forward(request, response);
-            }
-            
-            try {
-            String hashedPassword = toHexString(getSHA(password));
-            User user = new User(0, username, hashedPassword);
-            UserModel.addUser(user);
-            
-            response.sendRedirect("Twitter");
-            } catch (Exception ex) {
-                exceptionPage(ex, request, response);
-            }
-        } else if (action.equalsIgnoreCase("updateUser")) {
-            String id = request.getParameter("id");
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-            
-            if (id == null || username == null || password == null) {
-                String error = "username or password missing.";
-                request.setAttribute("error", error);
-                String url = "/error.jsp";
-                getServletContext().getRequestDispatcher(url).forward(request, response);
-            }
-            
-            try {
-            String hashedPassword = toHexString(getSHA(password));
-            User user = new User(Integer.parseInt(id), username, hashedPassword);
-            UserModel.updateUser(user);
-            
-            response.sendRedirect("Twitter");
-            } catch (Exception ex) {
-                exceptionPage(ex, request, response);
-            } 
-        } else if (action.equalsIgnoreCase("deleteUser")) {
-            String id = request.getParameter("id");
-            if (id == null){
-                String error = "id is missing";
-                request.setAttribute("error", error);
-                String url = "/error.jsp";
-                getServletContext().getRequestDispatcher(url).forward(request, response);
-            }
-            
-            try {
-            User user = new User(Integer.parseInt(id), "", "");
-            UserModel.deleteUser(user);
-            
-            response.sendRedirect("Twitter");
-            } catch (Exception ex) {
-                exceptionPage(ex, request, response);
-            } 
-        } else if (action.equalsIgnoreCase("followUser")) {
-            String u1ID = request.getParameter("followedbyuid");
-            String u2ID = request.getParameter("followinguid");
-            if (u1ID == null || u2ID == null){
-                String error = "one or both id(s) are missing";
-                request.setAttribute("error", error);
-                String url = "/error.jsp";
-                getServletContext().getRequestDispatcher(url).forward(request, response);
-            }
-            
-            try {
-                Follow follow = new Follow(0, Integer.parseInt(u1ID), Integer.parseInt(u2ID));
-            } catch (Exception ex) {
-                exceptionPage(ex, request, response);
-            } 
         } else {
-            response.sendRedirect("Twitter");
+            if (action == null) {
+                action = "createTweet";
+            }
+            
+            if (action == "createTweet") {
+                
+            }
         }
     }
 
-    private void exceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void exceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String error = ex.toString();
         request.setAttribute("error", error);
         String url = "/error.jsp";
@@ -125,13 +43,11 @@ public class Twitter extends HttpServlet {
     
     public static String toHexString(byte[] hash) {
         BigInteger number = new BigInteger(1, hash);
-        
         StringBuilder hexString = new StringBuilder(number.toString(16));
         
         while (hexString.length() < 32) {
             hexString.insert(0, '0');
         }
-        
         return hexString.toString();
     }
 

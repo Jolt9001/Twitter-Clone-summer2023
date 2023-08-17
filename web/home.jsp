@@ -8,19 +8,25 @@
         <title>Home</title>
     </head>
     <body>
-        <header role="banner">
-            
-        </header>
-        <main role="main">
+        <p>redirect test</p>
+        <main action="Twitter" method="post">
+            <p>redirect test</p>
             <section label="tweet-list">
-                <c:forEach var="tweet" items="${tweets}">
+                <c:forEach var="tweetId" items="${tweet}">
                     <article class="tweet">
                         <div class="tweetHead">
-                            <img src="GetImage/username${username}">
-                            <a href="">${username}</a>
+                            <c:when test="">
+                                <c:if test="${!filename.isEmpty()}">
+                                    <img src="GetImage/username${username}">
+                                </c:if>
+                                <a href="/Profile/${username}">
+                                    <c:out value=""/>
+                                </a>
+                            </c:when>
+                            <p><c.out value="$tweet.text"/></p>
                         </div>
                         <div class="tweetBody">
-                            <p></p>
+                            <p>${text}</p>
                             <c:if test="${!attachment.isEmpty()}">
                                 <img src="">
                             </c:if>

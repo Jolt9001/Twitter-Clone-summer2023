@@ -5,6 +5,8 @@
 package twitter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +19,7 @@ import static twitter.Twitter.toHexString;
  *
  * @author Owner
  */
-public class Login extends HttpServlet {
+public class UserManager extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,56 +33,23 @@ public class Login extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        
+        response.setContentType("text/html;charset=UTF-8");
         if (action == null) {
-            String url = "/login.jsp";
+            action = "listUsers";
+        }
+        
+        if (action.equalsIgnoreCase("listUsers")) {
+            ArrayList<User> users = UserModel.getUsers();
+            request.setAttribute("users", users);
+        
+            String url = "/users.jsp";
             getServletContext().getRequestDispatcher(url).forward(request, response);
-        } else if (action.equalsIgnoreCase("login")) {
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-            if (username == null || password == null || username.isEmpty() || password.isEmpty()){
-                if (username == null) {
-                    String e = "Username is invalid.";
-                    request.setAttribute("error", e);
-                    String url = "/error.jsp";
-                    getServletContext().getRequestDispatcher(url).forward(request, response);
-                } else {
-                    String e = "Password is invalid. you entered: " + password + ". expected password: " + UserModel.getUser(username).getPassword();
-                    request.setAttribute("error", e);
-                    String url = "/error.jsp";
-                    getServletContext().getRequestDispatcher(url).forward(request, response);
-                }
-            }
-            
-            try {
-                String hashedPassword = toHexString(getSHA(password));
-                User user = new User(0, username, hashedPassword);
-                
-                if (UserModel.login(user)) {
-                    HttpSession session = request.getSession();
-                    session.setAttribute("username", username); 
-                    
-                    if (hashedPassword != user.getPassword()) {
-                        String error = "Password is incorrect. you entered: " + hashedPassword + ". expected password: " + user.getPassword();
-                        request.setAttribute("error", error);
-                        String url = "/error.jsp";
-                        getServletContext().getRequestDispatcher(url).forward(request, response);
-                    }
-                    
-                    response.sendRedirect("Twitter");
-                } else {
-                    String error = "invalid username or password. input: " + username + ", " + password + ". expected: " + user.getUsername() + ", " + user.getPassword(); ;
-                    request.setAttribute("error", error);
-                    String url = "/error.jsp";
-                    getServletContext().getRequestDispatcher(url).forward(request, response);
-                }
-            } catch (Exception ex) {
-                exceptionPage(ex, request, response);
-            } 
-        } else if (action.equalsIgnoreCase("register")) {
+        } else if (action.equalsIgnoreCase("createUser")) {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
             
-            if (username == null || password == null) {
+            if (username == "" || password == "") {
                 String error = "username or password missing.";
                 request.setAttribute("error", error);
                 String url = "/error.jsp";
@@ -93,43 +62,82 @@ public class Login extends HttpServlet {
                 UserModel.addUser(user);
             
                 HttpSession session = request.getSession();
-                session.setAttribute("username", username);
+                session.setAttribute("username", username); 
             
-                response.sendRedirect("Twitter");
+                response.sendRedirect("UserManager");
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             }
+        } else if (action.equalsIgnoreCase("updateUser")) {
+            String id = request.getParameter("id");
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            
+            if (id == "" || username == "" || password == "") {
+                String error = "username or password missing.";
+                request.setAttribute("error", error);
+                String url = "/error.jsp";
+                getServletContext().getRequestDispatcher(url).forward(request, response);
+            }
+            
+            try {
+                String hashedPassword = toHexString(getSHA(password));
+                User user = new User(Integer.parseInt(id), username, hashedPassword);
+                UserModel.updateUser(user);
+
+                HttpSession session = request.getSession();
+                session.setAttribute("username", username);
+                session.setAttribute("password", hashedPassword);
+            
+                response.sendRedirect("UserManager");
+            } catch (Exception ex) {
+                exceptionPage(ex, request, response);
+            } 
+        } else if (action.equalsIgnoreCase("deleteUser")) {
+            String id = request.getParameter("id");
+            if (id == null){
+                String error = "id is missing";
+                request.setAttribute("error", error);
+                String url = "/error.jsp";
+                getServletContext().getRequestDispatcher(url).forward(request, response);
+            }
+            
+            try {
+            User user = new User(Integer.parseInt(id), "", "");
+            UserModel.deleteUser(user);
+            
+            HttpSession session = request.getSession();
+            
+            response.sendRedirect("UserManager");
+            } catch (Exception ex) {
+                exceptionPage(ex, request, response);
+            } 
+        } else if (action.equalsIgnoreCase("followUser")) {
+            String u1ID = request.getParameter("followedbyuid");
+            String u2ID = request.getParameter("followinguid");
+            if (u1ID == null || u2ID == null){
+                String error = "one or both id(s) are missing";
+                request.setAttribute("error", error);
+                String url = "/error.jsp";
+                getServletContext().getRequestDispatcher(url).forward(request, response);
+            }
+            
+            try {
+                Follow follow = new Follow(0, Integer.parseInt(u1ID), Integer.parseInt(u2ID));
+            } catch (Exception ex) {
+                exceptionPage(ex, request, response);
+            } 
+        } else {
+            response.sendRedirect("UserManager");
         }
     }
     
-    private void exceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void exceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String error = ex.toString();
         request.setAttribute("error", error);
         String url = "/error.jsp";
         getServletContext().getRequestDispatcher(url).forward(request, response);
     }
-    
-    public static boolean ensureLoginRedirect(HttpServletRequest request){
-        HttpSession session = request.getSession();
-        String sessionUsername = (String)session.getAttribute("username");
-        String sessionPassword = (String)session.getAttribute("password");
-        
-        String message = "";
-        if (sessionPassword == null) {
-            message = "Your session has expired. Please log in again.";
-            request.setAttribute("message", message);
-            return false;
-        }
-        User user = UserModel.getUser(sessionUsername);
-        if(user == null){
-            message = "You don't appear to be logged in. Please log in again.";
-            request.setAttribute("message", message);
-            return false;
-        }
-        return (sessionPassword.equals(user.getPassword()));
-    }
-    
-    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
