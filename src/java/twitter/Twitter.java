@@ -27,7 +27,7 @@ public class Twitter extends HttpServlet {
             action = "listUsers";
         }
         
-        if (action.equalsIgnoreCase("listUers")) {
+        if (action.equalsIgnoreCase("listUsers")) {
             ArrayList<User> users = UserModel.getUsers();
             request.setAttribute("users", users);
         
@@ -35,7 +35,7 @@ public class Twitter extends HttpServlet {
             getServletContext().getRequestDispatcher(url).forward(request, response);
         } else if (action.equalsIgnoreCase("createUser")) {
             String username = request.getParameter("username");
-            String password = request.getParameter("pasword");
+            String password = request.getParameter("password");
             
             if (username == null || password == null) {
                 String error = "username or password missing.";
@@ -56,7 +56,7 @@ public class Twitter extends HttpServlet {
         } else if (action.equalsIgnoreCase("updateUser")) {
             String id = request.getParameter("id");
             String username = request.getParameter("username");
-            String password = request.getParameter("pasword");
+            String password = request.getParameter("password");
             
             if (id == null || username == null || password == null) {
                 String error = "username or password missing.";
@@ -91,14 +91,37 @@ public class Twitter extends HttpServlet {
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             } 
-        } else if (action.equalsIgnoreCase("login")) {
-            String username = request.getParameter("username");
-            String password = request.getParameter("pasword");
-            if (username == null || password == null){
-                String error = "Username or Password is invalid.";
+        } else if (action.equalsIgnoreCase("followUser")) {
+            String u1ID = request.getParameter("followedbyuid");
+            String u2ID = request.getParameter("followinguid");
+            if (u1ID == null || u2ID == null){
+                String error = "one or both id(s) are missing";
                 request.setAttribute("error", error);
                 String url = "/error.jsp";
                 getServletContext().getRequestDispatcher(url).forward(request, response);
+            }
+            
+            try {
+                Follow follow = new Follow(0, Integer.parseInt(u1ID), Integer.parseInt(u2ID));
+            } catch (Exception ex) {
+                exceptionPage(ex, request, response);
+            } 
+        } else if (action.equalsIgnoreCase("login")) {
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            
+            if (username == null || password == null){
+                if (username == null) {
+                    String e = "Username is invalid.";
+                    request.setAttribute("error", e);
+                    String url = "/error.jsp";
+                    getServletContext().getRequestDispatcher(url).forward(request, response);
+                } else {
+                    String e = "Password is invalid.";
+                    request.setAttribute("error", e);
+                    String url = "/error.jsp";
+                    getServletContext().getRequestDispatcher(url).forward(request, response);
+                }
             }
             
             try {
@@ -106,9 +129,8 @@ public class Twitter extends HttpServlet {
                 User user = new User(0, username, hashedPassword);
                 
                 if (UserModel.login(user)) {
-                    
+                    response.sendRedirect("Twitter");
                 }
-                response.sendRedirect("Twitter");
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             } 
