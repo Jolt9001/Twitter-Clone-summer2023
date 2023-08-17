@@ -1,8 +1,3 @@
-<%-- 
-    Document   : login
-    Created on : Aug 11, 2023, 3:52:02 PM
-    Author     : Owner
---%>
 
 <%String message = (String) request.getAttribute("message"); %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
