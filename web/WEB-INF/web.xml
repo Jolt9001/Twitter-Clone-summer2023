@@ -20,6 +20,10 @@
         <servlet-name>GetImage</servlet-name>
         <servlet-class>twitter.GetImage</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetAttachment</servlet-name>
+        <servlet-class>twitter.GetAttachment</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>twitter</servlet-name>
         <url-pattern>/twitter</url-pattern>
@@ -39,6 +43,10 @@
     <servlet-mapping>
         <servlet-name>GetImage</servlet-name>
         <url-pattern>/GetImage</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetAttachment</servlet-name>
+        <url-pattern>/GetAttachment</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
