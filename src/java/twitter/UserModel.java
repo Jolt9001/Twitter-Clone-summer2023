@@ -27,8 +27,6 @@ public class UserModel {
                 int id = results.getInt("id");
                 String username = results.getString("username");
                 password = results.getString("password");
-                
-                user = new User(id, username, password);
             }
             
             results.close();
@@ -81,11 +79,11 @@ public class UserModel {
             
             Statement statement = connection.createStatement();
             
-            ResultSet results = statement.executeQuery("select * from user");
+            ResultSet results = statement.executeQuery("select id, username, password, filename from user");
             
             while (results.next()) {
                 int id = results.getInt("id");
-                String username = results.getString("string");
+                String username = results.getString("username");
                 String password = results.getString("password");
                 String filename = results.getString("filename");
                 
@@ -121,7 +119,6 @@ public class UserModel {
             
             statement.close();
             connection.close();
-            
         } 
         catch (Exception ex){
             System.out.println(ex);
