@@ -12,13 +12,11 @@ import java.util.ArrayList;
  * @author Owner
  */
 public class UserModel {
-    
     public static boolean login (User user) {
         try {
             Connection connection = DBConnection.getConnection();
             
-            String query = "select id, username, password from user "
-                    + "where username = ?";
+            String query = "select id, username, password from user where username = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             
             statement.setString(1, user.getUsername());
@@ -29,6 +27,8 @@ public class UserModel {
                 int id = results.getInt("id");
                 String username = results.getString("username");
                 password = results.getString("password");
+                
+                user = new User(id, username, password);
             }
             
             results.close();
@@ -47,8 +47,7 @@ public class UserModel {
         User user = null;
         
         try {
-            String query = "select id, username, password, filename from user "
-                    + "where username = ?";
+            String query = "select id, username, password, filename from user where username = ?";
             
             Connection connection = DBConnection.getConnection();
             PreparedStatement statement = connection.prepareStatement(query);
@@ -162,6 +161,29 @@ public class UserModel {
             statement.setInt(1, user.getId());
             
             statement.execute();
+            statement.close();
+            connection.close();
+            
+        } 
+        catch (Exception ex){
+            System.out.println(ex);
+        }
+    }
+    
+    public static void followUser(User user1, User user2) {
+        try {
+            Connection connection = DBConnection.getConnection();
+            
+            String query = "insert into following (followedbyuid, followinguid) values (?, ?)";
+            
+            PreparedStatement statement = connection.prepareStatement(query);
+            
+            // indexing starts with 1
+            statement.setString(1, Integer.toString(user1.getId()));
+            statement.setString(2, Integer.toString(user2.getId()));
+            
+            statement.execute();
+            
             statement.close();
             connection.close();
             
