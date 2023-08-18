@@ -57,5 +57,29 @@ public class Tweet {
     public int getUser_id() {
         return user_id;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
+    public void setAttachment(Blob attachment) {
+        this.attachment = attachment;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
     
 }

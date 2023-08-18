@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -107,6 +108,33 @@ public class UserModel {
             System.out.println(ex);
         }
         return users;
+    }
+    
+    public static List<User> getUsersSansCurrent(String currentUsername) {
+        List<User> userList = new ArrayList<>();
+        try {
+            Connection connection = DBConnection.getConnection();
+            String query = "select * from user where username != ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, currentUsername);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String username = resultSet.getString("username");
+                String filename = resultSet.getString("filename");
+
+                User user = new User(id, username, "", filename);
+                userList.add(user);
+            }
+
+            preparedStatement.close();
+            connection.close();
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+
+        return userList;
     }
     
     public static void addUser(User user){

@@ -11,7 +11,8 @@
             elem.action = "unfollowUser";
         }
         else {
-            "Follow User";
+            elem.value = "Follow User";
+            elem.action = "unfollowUser";
         }
     }
 </script>
@@ -27,7 +28,7 @@
                 <th>ID</th>
                 <th>Username</th>
                 <th>Password Hash</th>
-                <th> Profile Picture Filename</th>
+                <th>Profile Picture Filename</th>
             </tr>
             <c:forEach var="user" items="${users}">
             <tr>

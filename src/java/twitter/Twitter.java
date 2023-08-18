@@ -6,10 +6,12 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class Twitter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -21,13 +23,32 @@ public class Twitter extends HttpServlet {
         if (Login.ensureLoginRedirect(request, loginPersist)) {
             request.setAttribute("message", "Please log in to continue.");
         } 
-        if (action == null) {
-           String url = "/home.jsp";
-           getServletContext().getRequestDispatcher(url).forward(request, response);
+        if (action == null || action.equals("home")) {
+            String url = "/home.jsp";
+            HttpSession session = request.getSession();
+            String username = (String) session.getAttribute("username");
+
+            // Pass the current username to the home.jsp page
+            request.setAttribute("username", username);
+
+            getServletContext().getRequestDispatcher(url).forward(request, response);
         }
+        
+        if (action.equals("listUsers")){
+            HttpSession session = request.getSession();
+            String username = (String) session.getAttribute("username");
             
-        if (action == "createTweet") {
+            List<User> users = UserModel.getUsersSansCurrent(username);
+            request.setAttribute("users", users);
+        } else if (action.equals("listTweets")){
+           List<Tweet> tweets = TweetModel.getAllTweets();
+           request.setAttribute("tweets", tweets);
+        } else if (action.equals("createTweet")) {
                 
+        } else if (action.equals("followUser")) {
+            
+        } else if (action.equals("unfollowUser")) {
+            
         }
     }
 

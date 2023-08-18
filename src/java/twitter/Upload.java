@@ -1,14 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
+
 package twitter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -17,10 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-/**
- *
- * @author Owner
- */
 @MultipartConfig(maxFileSize = 1000000)
 public class Upload extends HttpServlet {
 
@@ -49,11 +41,10 @@ public class Upload extends HttpServlet {
             String username = session.getAttribute("username").toString();
             
             Connection connection = DBConnection.getConnection();
-            String preparedSQL = "update user set image = ? filename = ?"
-                    + " where username = ?";
+            String preparedSQL = "update user set image = ?, filename = ? where username = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(preparedSQL.toString());
             
-            // index starts at 17
+            // index starts at 1
             preparedStatement.setBlob(1, inputStream);
             preparedStatement.setString(2, fileName);
             preparedStatement.setString(3, username);
@@ -81,4 +72,51 @@ public class Upload extends HttpServlet {
         }
         return "";
     }
+    
+    
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+    
+    
+
+    
+    
+    
 }

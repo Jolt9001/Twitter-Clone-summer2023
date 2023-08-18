@@ -38,29 +38,38 @@ public class GetImage extends HttpServlet {
             Connection connection = DBConnection.getConnection();
             String preparedSQL = "select image, filename from user where username = ? ";
             PreparedStatement preparedStatement = connection.prepareStatement(preparedSQL);
-            
+
             preparedStatement.setString(1, username);
             ResultSet result = preparedStatement.executeQuery();
-            Blob blob = null;
             String filename = "";
-            while (result.next()) {
+            Blob blob = null;
+
+            if (result.next()) {
                 blob = result.getBlob("image");
                 filename = result.getString("filename");
+
+                byte[] imageBytes = blob.getBytes(1, (int) blob.length());
+
+                preparedStatement.close();
+                connection.close();
+                preparedStatement.close();
+                connection.close();
+
+                String contentType = this.getServletContext().getMimeType(filename);
+
+                response.setHeader("Content-Type", contentType);
+
+                OutputStream os = response.getOutputStream();
+                os.write(imageBytes);
+                os.flush();
+                os.close();
+            } else {
+                System.out.println("No image found for username: " + username);
+                preparedStatement.close();
+                connection.close();
             }
             
-            byte[] imageBytes = blob.getBytes(1, (int)blob.length());
             
-            preparedStatement.close();
-            connection.close();
-            
-            String contentType = this.getServletContext().getMimeType(filename);
-            
-            response.setHeader("Content-Type", contentType);
-            
-            OutputStream os = response.getOutputStream();
-            os.write(imageBytes);
-            os.flush();
-            os.close();
         } catch (Exception ex) {
             request.setAttribute("error", ex.toString());
             String url = "/error.jsp";
