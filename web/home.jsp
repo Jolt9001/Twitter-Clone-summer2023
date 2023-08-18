@@ -8,35 +8,30 @@
         <title>Home</title>
     </head>
     <body>
-        <p>redirect test</p>
-        <main action="Twitter" method="post">
-            <p>redirect test</p>
-            <section label="tweet-list">
-                <c:forEach var="tweetId" items="${tweet}">
-                    <article class="tweet">
-                        <div class="tweetHead">
-                            <c:when test="">
-                                <c:if test="${!filename.isEmpty()}">
-                                    <img src="GetImage/username${username}">
-                                </c:if>
-                                <a href="/Profile/${username}">
-                                    <c:out value=""/>
-                                </a>
-                            </c:when>
-                            <p><c.out value="$tweet.text"/></p>
-                        </div>
-                        <div class="tweetBody">
-                            <p>${text}</p>
-                            <c:if test="${!attachment.isEmpty()}">
-                                <img src="">
-                            </c:if>
-                        </div>
-                        <div class="tweetFoot">
-                            
-                        </div>
-                    </article>
-                </c:forEach>
-            </section>
-        </main>
+        <h2>TwitterClone</h2>
+        <p>Debug: home.jsp accessed.</p>
+        <section class="tweet-list">
+            <c:forEach var="tweet" items="${tweets}">
+                <article class="tweet">
+                    <div class="tweetHead">
+                        <c:if test="${!filename.isEmpty()}">
+                            <img src="GetImage?username${username}">
+                        </c:if>
+                        <a href="/Profile/${tweet.username}">
+                            <c:out value="${tweet.username}"/>
+                        </a>
+                    </div>
+                    <div class="tweetBody">
+                        <p><c:out value="${tweet.text}"/></p>
+                        <c:if test="${!tweet.attachment.isEmpty()}">
+                            <img src="${tweet.attachment}">
+                        </c:if>
+                    </div>
+                    <div class="tweetFoot">
+                        <!-- Other tweet footer content here -->
+                    </div>
+                </article>
+            </c:forEach>
+        </section>
     </body>
 </html>

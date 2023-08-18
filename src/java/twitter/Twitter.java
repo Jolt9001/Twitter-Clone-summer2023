@@ -15,17 +15,19 @@ public class Twitter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        
-        if (!Login.ensureLoginRedirect(request)) {
+        action = null;
+        boolean loginPersist = false;
+
+        if (Login.ensureLoginRedirect(request, loginPersist)) {
             request.setAttribute("message", "Please log in to continue.");
-        } else {
-            if (action == null) {
-                action = "createTweet";
-            }
+        } 
+        if (action == null) {
+           String url = "/home.jsp";
+           getServletContext().getRequestDispatcher(url).forward(request, response);
+        }
             
-            if (action == "createTweet") {
+        if (action == "createTweet") {
                 
-            }
         }
     }
 

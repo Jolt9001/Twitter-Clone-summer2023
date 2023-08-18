@@ -24,17 +24,17 @@
         <h2>Users</h2>
         <table>
             <tr>
-                <th>ID | </th>
-                <th>Username | </th>
-                <th>Password Hash | </th>
-                <th>Profile Picture Filename | </th>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Password Hash</th>
+                <th> Profile Picture Filename</th>
             </tr>
             <c:forEach var="user" items="${users}">
             <tr>
                 <td><c:out value="${user.id}"/></td>
-                <td><c:out value=" | ${user.username}"/></td>
-                <td><c:out value=" | ${user.password}"/></td>
-                <td><c:out value=" | ${user.filename}"/></td>
+                <td><c:out value="${user.username}"/></td>
+                <td><c:out value="${user.password}"/></td>
+                <td><c:out value="${user.filename}"/></td>
                 <td>
                     <input id="follow" type="submit" name="action" action="followUser" value="Follow User" onClick="switchFollow()"/>
                 </td>

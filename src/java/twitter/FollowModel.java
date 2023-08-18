@@ -51,7 +51,7 @@ public class FollowModel {
         }
     }
     
-    public static void ensureLoginRedirect(HttpServletRequest request) {
-        Login.ensureLoginRedirect(request);
+    public static void ensureLoginRedirect(HttpServletRequest request, boolean isLoggedIn) {
+        Login.ensureLoginRedirect(request, isLoggedIn);
     }
 }

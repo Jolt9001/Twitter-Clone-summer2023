@@ -28,11 +28,9 @@ public class Profile extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        if (!Login.ensureLoginRedirect(request)) {
+        boolean loginPersist = false;
+        if (!Login.ensureLoginRedirect(request, loginPersist)) {
             request.setAttribute("message", "Please log in to continue.");
-            response.sendRedirect("Login");
-            return;
         }
         
         HttpSession session = request.getSession();
