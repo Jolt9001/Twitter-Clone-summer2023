@@ -52,12 +52,12 @@
             <h2>Your feed</h2>
             <c:forEach var="tweet" items="${tweets}">
                 <article class="tweet">
-                    <c:set var="user" value="${TweetModel.getUsername(tweet.user_id)}" />
+                    <c:set var="user" value="${TweetModel.getUsername(tweet.user_id)}"/>
                     <div class="tweetHead">
                         <p>DEBUG STATEMENTS</p>
                         Tweet ID: ${tweet.id}<br>
                         <img src="${profileImageURL}" alt="pfp">
-                        UID: ${tweet.user_id}
+                        ${tweet.user_id}
                         Username: ${user}
                     </div>
                     <div class="tweetBody">

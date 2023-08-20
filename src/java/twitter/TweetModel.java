@@ -69,6 +69,7 @@ public class TweetModel {
             }
             connection.close();
             statement.close();
+            results.close();
         } catch (Exception ex){
             System.out.println(ex);
         }
@@ -91,11 +92,13 @@ public class TweetModel {
             
             connection.close();
             statement.close();
+            results.close();
         } catch (Exception ex){
             System.out.println(ex);
         }
         return username;
     }
+    
     public static String getPFP_URL(String username) {
         String profileImageURL = "";
         try {
@@ -108,11 +111,12 @@ public class TweetModel {
             ResultSet results = statement.executeQuery();
 
             if (results.next()) {
-                profileImageURL = results.getString("profile_image_url");
+                profileImageURL = results.getString("filename");
             }
 
             connection.close();
             statement.close();
+            results.close();
         } catch (Exception ex){
             System.out.println(ex);
         }

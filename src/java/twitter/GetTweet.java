@@ -66,6 +66,7 @@ public class GetTweet extends HttpServlet {
                 
                 preparedStatement.close();
                 connection.close();
+                result.close();
                 
                 String contentType = this.getServletContext().getMimeType(filename);
             
@@ -100,6 +101,7 @@ public class GetTweet extends HttpServlet {
 
             preparedStatement.close();
             connection.close();
+            result.close();
 
             // Call the getTweetUsername method to fetch the username
             String username = TweetModel.getUsername(user_id);
@@ -107,6 +109,8 @@ public class GetTweet extends HttpServlet {
             // Get the image URL using the username and store it in a variable
             String profileImageURL = TweetModel.getPFP_URL(username);
             request.setAttribute("username", username);
+            System.out.println("username: " + username);
+            System.out.flush();
             
             // Set the profileImageURL as an attribute and forward to JSP
             request.setAttribute("profileImageURL", profileImageURL);
