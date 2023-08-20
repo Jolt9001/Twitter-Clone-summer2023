@@ -44,7 +44,7 @@ public class Login extends HttpServlet {
                     String url = "/error.jsp";
                     getServletContext().getRequestDispatcher(url).forward(request, response);
                 } else {
-                    String e = "Password is invalid. you entered: " + password + ". expected password: " + UserModel.getUser(username).getPassword();
+                    String e = "Password is invalid.";
                     request.setAttribute("error", e);
                     String url = "/error.jsp";
                     getServletContext().getRequestDispatcher(url).forward(request, response);

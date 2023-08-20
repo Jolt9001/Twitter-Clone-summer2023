@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -121,5 +120,35 @@ public class TweetModel {
             System.out.println(ex);
         }
         return profileImageURL;
+    }
+    
+    public static void createTweet(Tweet tweet, boolean hasAttachment) {
+        try {
+            Connection connection = DBConnection.getConnection();
+            String query;
+
+            if (hasAttachment) {
+                query = "insert into tweet (text, user_id, attachment, filename) values (?, ?, ?, ?)";
+            } else {
+                query = "insert into tweet (text, user_id) values (?, ?)";
+            }
+
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            statement.setString(1, tweet.getText());
+            statement.setInt(2, tweet.getUser_id());
+
+            if (hasAttachment) {
+                statement.setBlob(3, tweet.getAttachment());
+                statement.setString(4, tweet.getFilename());
+            }
+
+            statement.execute();
+
+            statement.close();
+            connection.close();
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
     }
 }

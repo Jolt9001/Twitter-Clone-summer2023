@@ -3,7 +3,6 @@ package twitter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

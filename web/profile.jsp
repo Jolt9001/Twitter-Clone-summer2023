@@ -13,7 +13,7 @@
         <img src="GetImage?username=${username}" width="150" height="150">
     </c:if>
     <h3>Upload a profile picture!</h3>
-    <form action="${pageContext.request.contextPath}/Upload" method="post" enctype="multipart/form-data">
+    <form action="${pageContext.request.contextPath}/UploadPFP" method="post" enctype="multipart/form-data">
         <div id="data">
             <input type="file" accept="image/*" name="file"/>
         </div>

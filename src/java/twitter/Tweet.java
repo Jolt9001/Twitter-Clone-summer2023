@@ -14,6 +14,7 @@ public class Tweet {
     private Timestamp timestamp;
     private int user_id;
     private Blob attachment;
+    private String filename;
     private int likes;
 
     public Tweet(int id, String text, Timestamp timestamp, int user_id, Blob attachment, String filename, int likes) {
@@ -22,6 +23,7 @@ public class Tweet {
         this.timestamp = timestamp;
         this.user_id = user_id;
         this.attachment = attachment;
+        this.filename = filename;
         this.likes = likes;
     }
     
@@ -32,10 +34,15 @@ public class Tweet {
         this.user_id = user_id;
         this.likes = likes;
         this.attachment = null;
+        this.filename = "";
     }
 
     public Blob getAttachment() {
         return attachment;
+    }
+
+    public String getFilename() {
+        return filename;
     }
 
     public int getLikes() {
@@ -82,4 +89,7 @@ public class Tweet {
         this.likes = likes;
     }
     
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 }

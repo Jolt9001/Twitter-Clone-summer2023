@@ -2,12 +2,13 @@
 package twitter;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Blob;
 import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -65,7 +66,38 @@ public class Twitter extends HttpServlet {
             ArrayList<Tweet> tweets = TweetModel.getAllTweets();
             request.setAttribute("tweets", tweets);
         } else if (action.equalsIgnoreCase("createTweet")) {
+            String text = request.getParameter("text");
+            String filename = request.getParameter("filename");
             
+            if (text == "") {
+                String error = "Tweet content missing.";
+                request.setAttribute("error", error);
+                String url = "/error.jsp";
+                getServletContext().getRequestDispatcher(url).forward(request, response);
+            }
+            
+            try {
+                HttpSession session = request.getSession();
+                String username = (String)session.getAttribute("username");
+                User user = UserModel.getUser(username);
+                
+                boolean attchTest = request.getParameter("attached") != null && request.getParameter("attached").equals("true");
+                boolean flag = (Boolean)session.getAttribute("success");
+                if (attchTest && !flag) {
+                    request.getRequestDispatcher("/UploadAttch").forward(request, response);
+                }
+                if (attchTest && flag) {
+                    Blob attachment = (Blob)session.getAttribute("blob");
+                    filename = (String)session.getAttribute("filename");
+                    Tweet tweet = new Tweet(0, text, null, user.getId(), attachment, filename, 0);
+                    TweetModel.createTweet(tweet, true);
+                } else {
+                    Tweet tweet = new Tweet(0, text, null, user.getId(), 0);
+                    TweetModel.createTweet(tweet, false);
+                }
+            } catch (Exception ex) {
+                exceptionPage(ex, request, response);
+            }
         }
         
         String url = "/home.jsp";

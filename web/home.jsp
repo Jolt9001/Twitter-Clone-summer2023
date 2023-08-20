@@ -62,8 +62,9 @@
                     </div>
                     <div class="tweetBody">
                         ${tweet.text}
-                        <c:if test="${!empty tweet.attachment}">
-                            <img src="GetTweet?tAction=">
+                        <c:if test="${!tweet.attachment.isEmpty()}">
+                            <c:set var="tAction" value="getAttachment"/>
+                            <img src="GetTweet?tAction=${tAction}">
                         </c:if>
                     </div>
                     <div class="tweetFoot">
@@ -74,10 +75,13 @@
         </section>
         <br><br>
         <section class="tweet-create">
-            <form action="${pageContext.request.contextPath}/Upload" method="post" enctype="multipart/form-data">
+            <form action="${pageContext.request.contextPath}/Twitter" method="post" enctype="multipart/form-data">
                 <input type="text" name="text" placeholder="What's happening?"/>
                 <input type="submit" value="Create Post"/><br>
                 <input type="file" accept="image/*" name="file"/>
+                <c:if test="${not empty param.file}">
+                    <input type="hidden" name="attached" value="true"/>
+                </c:if>
             </form>
         </section>
     </body>

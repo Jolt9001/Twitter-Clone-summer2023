@@ -32,6 +32,10 @@
         <servlet-name>UserManager</servlet-name>
         <servlet-class>twitter.UserManager</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UploadAttch</servlet-name>
+        <servlet-class>twitter.UploadAttch</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Twitter</servlet-name>
         <url-pattern>/Twitter</url-pattern>
@@ -59,6 +63,10 @@
     <servlet-mapping>
         <servlet-name>UserManager</servlet-name>
         <url-pattern>/UserManager</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UploadAttch</servlet-name>
+        <url-pattern>/UploadAttch</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
