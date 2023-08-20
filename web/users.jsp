@@ -1,8 +1,7 @@
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-
 <script type="text/javascript">
     function switchFollow() {
         var elem = document.getElementById("follow").onclick;
@@ -29,6 +28,7 @@
                 <th>Username</th>
                 <th>Password Hash</th>
                 <th>Profile Picture Filename</th>
+                <th>Follow/Unfollow</th>
             </tr>
             <c:forEach var="user" items="${users}">
             <tr>
@@ -37,12 +37,15 @@
                 <td><c:out value="${user.password}"/></td>
                 <td><c:out value="${user.filename}"/></td>
                 <td>
-                    <input id="follow" type="submit" name="action" action="followUser" value="Follow User" onClick="switchFollow()"/>
+                    <form action="Twitter" method="post">
+                        <input type="hidden" name="action" value="followUser">
+                        <input id="follow" type="submit" value="Follow User" onClick="switchFollow(this)"/>
+                    </form>
                 </td>
             </tr>
-            </c:forEach>
+        </c:forEach>
         </table>
-        
+
         <h2>Create user</h2>
         <form action="UserManager" method="post">
             <label>Username</label>

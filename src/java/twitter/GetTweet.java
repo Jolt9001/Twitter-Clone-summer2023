@@ -3,6 +3,7 @@ package twitter;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,23 +30,34 @@ public class GetTweet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String tweetId = request.getParameter("id");
+        String tAction = request.getParameter("tAction");
         
+        if ("getAttachment".equalsIgnoreCase(tAction)) {
+            getTweetAttachment(request, response);
+        } else if ("getUserPFP".equalsIgnoreCase(tAction)) {
+            getUserPFP(request, response);
+        } else {
+            request.setAttribute("error", "Invalid action.");
+            String url = "/error.jsp";
+            getServletContext().getRequestDispatcher(url).forward(request, response);
+        }
+    }
+    
+    private void getTweetAttachment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String tweetId = request.getParameter("id");
         try {
             Connection connection = DBConnection.getConnection();
-            String preparedSQL = "select user_id, attachment, filename from tweet where id = ?";
+            String preparedSQL = "select attachment, filename from tweet where id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(preparedSQL);
-            ResultSet result = preparedStatement.executeQuery();
             
             preparedStatement.setString(1, tweetId);
-            int user_id = 0;
+            ResultSet result = preparedStatement.executeQuery();
+            
             Blob attachment = null;
             String filename = "";
-            
-            String attachmentCheck = result.getString("attachment");
-            if (attachmentCheck != null) {
+            if (result.next()) {
                 while (result.next()) {
-                    user_id = result.getInt("user_id");
                     attachment = result.getBlob("attachment");
                     filename = result.getString("filename");
                 }
@@ -53,6 +65,7 @@ public class GetTweet extends HttpServlet {
                 byte[] imageBytes = attachment.getBytes(1, (int)attachment.length());
                 
                 preparedStatement.close();
+                connection.close();
                 
                 String contentType = this.getServletContext().getMimeType(filename);
             
@@ -62,36 +75,49 @@ public class GetTweet extends HttpServlet {
                 os.write(imageBytes);
                 os.flush();
                 os.close();
-            } else {
-                while (result.next()) {
-                    user_id = result.getInt("user_id");
-                }
-                
-                preparedStatement.close();
             }
-            
-            
-            preparedSQL = "select username from user where id =  ?";
-            preparedStatement = connection.prepareStatement(preparedSQL);
-            
-            String userId = Integer.toString(user_id);
-            preparedStatement.setString(1, userId);
-            result = preparedStatement.executeQuery();
-            String username = "";
-            while (result.next()) {
-                username = result.getString("username");
-            }
-            
-            request.setAttribute("username", username);
-            request.getRequestDispatcher("/getImage").forward(request, response);
-            
         } catch (Exception ex) {
             request.setAttribute("error", ex.toString());
             String url = "/error.jsp";
             getServletContext().getRequestDispatcher(url).forward(request, response);
         }
     }
+    
+    private void getUserPFP(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String tweetId = request.getParameter("id");
 
+        try {
+            Connection connection = DBConnection.getConnection();
+            String preparedSQL = "select user_id from tweet where id = ?";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(preparedSQL);
+            preparedStatement.setString(1, tweetId);
+
+            ResultSet result = preparedStatement.executeQuery();
+
+            int user_id = result.getInt("user_id");
+
+            preparedStatement.close();
+            connection.close();
+
+            // Call the getTweetUsername method to fetch the username
+            String username = TweetModel.getUsername(user_id);
+            
+            // Get the image URL using the username and store it in a variable
+            String profileImageURL = TweetModel.getPFP_URL(username);
+            request.setAttribute("username", username);
+            
+            // Set the profileImageURL as an attribute and forward to JSP
+            request.setAttribute("profileImageURL", profileImageURL);
+            request.getRequestDispatcher("/home.jsp").forward(request, response);
+        } catch (Exception ex) {
+            request.setAttribute("error", ex.toString());
+            String url = "/error.jsp";
+            getServletContext().getRequestDispatcher(url).forward(request, response);
+        }
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

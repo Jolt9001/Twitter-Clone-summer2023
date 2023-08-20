@@ -52,8 +52,6 @@ public class GetImage extends HttpServlet {
 
                 preparedStatement.close();
                 connection.close();
-                preparedStatement.close();
-                connection.close();
 
                 String contentType = this.getServletContext().getMimeType(filename);
 

@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,39 +18,58 @@ public class Twitter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        action = null;
         boolean loginPersist = false;
 
-        if (Login.ensureLoginRedirect(request, loginPersist)) {
+        if (!Login.ensureLoginRedirect(request, loginPersist)) {
             request.setAttribute("message", "Please log in to continue.");
-        } 
-        if (action == null || action.equals("home")) {
-            String url = "/home.jsp";
-            HttpSession session = request.getSession();
-            String username = (String) session.getAttribute("username");
-
-            // Pass the current username to the home.jsp page
-            request.setAttribute("username", username);
-
-            getServletContext().getRequestDispatcher(url).forward(request, response);
         }
         
-        if (action.equals("listUsers")){
+        if (action == null) {
+            action = "listUsers";
+            request.setAttribute("action", action);
+        }
+        
+        // Users section
+        if (action.equalsIgnoreCase("listUsers")) {
             HttpSession session = request.getSession();
-            String username = (String) session.getAttribute("username");
+            String username = (String)session.getAttribute("username");
             
-            List<User> users = UserModel.getUsersSansCurrent(username);
+            ArrayList<User> users = UserModel.getUsersSansCurrent(username);
             request.setAttribute("users", users);
-        } else if (action.equals("listTweets")){
-           List<Tweet> tweets = TweetModel.getAllTweets();
-           request.setAttribute("tweets", tweets);
-        } else if (action.equals("createTweet")) {
-                
-        } else if (action.equals("followUser")) {
+        } else if (action.equalsIgnoreCase("followUser")) {
+            String u1ID = request.getParameter("followedbyuid");
+            String u2ID = request.getParameter("followinguid");
+            if (u1ID == null || u2ID == null){
+                String error = "one or both id(s) are missing";
+                request.setAttribute("error", error);
+                String url = "/error.jsp";
+                getServletContext().getRequestDispatcher(url).forward(request, response);
+            }
+
+            try {
+                Follow follow = new Follow(0, Integer.parseInt(u1ID), Integer.parseInt(u2ID));
+            } catch (Exception ex) {
+                exceptionPage(ex, request, response);
+            } 
             
-        } else if (action.equals("unfollowUser")) {
+        } else if (action.equalsIgnoreCase("unfollowUser")) {
             
         }
+        
+        // Tweets section
+        
+        // set action to "listTweets"
+        action = "listTweets";
+        request.setAttribute("action", action);
+        if (action.equalsIgnoreCase("listTweets")) {
+            ArrayList<Tweet> tweets = TweetModel.getAllTweets();
+            request.setAttribute("tweets", tweets);
+        } else if (action.equalsIgnoreCase("createTweet")) {
+            
+        }
+        
+        String url = "/home.jsp";
+        getServletContext().getRequestDispatcher(url).forward(request, response);
     }
 
     public void exceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

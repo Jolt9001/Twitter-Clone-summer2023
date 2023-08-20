@@ -16,7 +16,7 @@ public class Tweet {
     private Blob attachment;
     private int likes;
 
-    public Tweet(int id, String text, Timestamp timestamp, int user_id, Blob attachment, int likes) {
+    public Tweet(int id, String text, Timestamp timestamp, int user_id, Blob attachment, String filename, int likes) {
         this.id = id;
         this.text = text;
         this.timestamp = timestamp;

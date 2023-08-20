@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -92,10 +91,6 @@ public class UserModel {
                 String filename = results.getString("filename");
                 
                 User user = new User(id, username, password, filename);
-                user.setId(id);
-                user.setPassword(password);
-                user.setUsername(username);
-                user.setFilename(filename);
                 
                 users.add(user);
             }
@@ -110,26 +105,31 @@ public class UserModel {
         return users;
     }
     
-    public static List<User> getUsersSansCurrent(String currentUsername) {
-        List<User> userList = new ArrayList<>();
+    public static ArrayList<User> getUsersSansCurrent(String currentUsername) {
+        ArrayList<User> userList = new ArrayList<>();
         try {
             Connection connection = DBConnection.getConnection();
-            String query = "select * from user where username != ?";
+            String query = "select id, username, filename from user where username != ?";
+            
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, currentUsername);
+            
             ResultSet resultSet = preparedStatement.executeQuery();
-
+            
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String username = resultSet.getString("username");
                 String filename = resultSet.getString("filename");
 
                 User user = new User(id, username, "", filename);
+                
                 userList.add(user);
             }
-
+            
+            resultSet.close();
             preparedStatement.close();
             connection.close();
+            
         } catch (Exception ex) {
             System.out.println(ex);
         }

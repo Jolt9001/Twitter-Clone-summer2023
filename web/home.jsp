@@ -21,56 +21,64 @@
     <body>
         <h2>TwitterClone Home</h2>
         <c:if test="${!user.filename.isEmpty()}">
-            <img src="GetImage?username=${username}" width="200" height="200">
+            <img src="GetImage?username=${username}" width="200" height="200"><br>
         </c:if>
-        <p>${username} logged in.</p>
+        ${username} logged in.
         <section class="user-list">
             <h2>Followable Users</h2>
-            <form action="Twitter" method="post"> <!-- Use a form with action "Twitter" and method "post" -->
-                <table>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>PFP filename</th>
+                    <th>Follow/Unfollow</th>
+                </tr>
+                <c:forEach var="user" items="${users}">
                     <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>PFP filename</th>
-                        <th>Follow/Unfollow</th>
+                        <td><c:out value="${user.id}"/></td>
+                        <td><c:out value="${user.username}"/></td>
+                        <td><c:out value="${user.filename}"/></td>
+                        <td>
+                            <form action="Twitter" method="post">
+                                <input type="hidden" name="action" value="followUser">
+                                <input id="follow" type="submit" value="Follow User" onClick="switchFollow(this)"/>
+                            </form>
+                        </td>
                     </tr>
-                    <c:forEach var="user" items="${users}">
-                        debug: foreach userlist
-                        <tr>
-                            <td><c:out value="${user.id}"/></td>
-                            <td><c:out value="${user.username}"/></td>
-                            <td><c:out value="${user.filename}"/></td>
-                            <td>
-                                <form action="Twitter" method="post">
-                                    <input type="hidden" name="action" value="followUser">
-                                    <input id="follow" type="submit" value="Follow User" onClick="switchFollow(this)"/>
-                                </form>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </table>
-            </form>
+                </c:forEach>
+            </table>
         </section>
         <section class="tweet-list">
-            Debug: section class tweet-list.
+            <h2>Your feed</h2>
             <c:forEach var="tweet" items="${tweets}">
-                Debug: forEach jstl.
                 <article class="tweet">
+                    <c:set var="user" value="${TweetModel.getUsername(tweet.user_id)}" />
                     <div class="tweetHead">
-                        <img src="GetTweet/id${tweet.id}">
-                        <p>${tweet.user.GetUsername()}</p>
+                        <p>DEBUG STATEMENTS</p>
+                        Tweet ID: ${tweet.id}<br>
+                        <img src="${profileImageURL}" alt="pfp">
+                        UID: ${tweet.user_id}
+                        Username: ${user}
                     </div>
                     <div class="tweetBody">
-                        <p>${text}</p>
+                        ${tweet.text}
                         <c:if test="${!empty tweet.attachment}">
-                            <img src="${tweet.getAttachment()}">
+                            <img src="GetTweet?tAction=">
                         </c:if>
                     </div>
                     <div class="tweetFoot">
-
+                        <input type="button" name="like" value ="Like"/>
                     </div>
                 </article>
             </c:forEach>
+        </section>
+        <br><br>
+        <section class="tweet-create">
+            <form action="${pageContext.request.contextPath}/Upload" method="post" enctype="multipart/form-data">
+                <input type="text" name="text" placeholder="What's happening?"/>
+                <input type="submit" value="Create Post"/><br>
+                <input type="file" accept="image/*" name="file"/>
+            </form>
         </section>
     </body>
 </html>

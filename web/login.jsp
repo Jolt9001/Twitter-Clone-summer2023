@@ -26,9 +26,9 @@
             <input type="submit" name="action" action="createUser" value="Register"/>
         </form>
         <%if (message != null) {%>
-        <div class="error-message">
-            <%= message %>
-        </div>
+            <div class="error-message">
+                <%= message %>
+            </div>
         <% } %>
     </body>
 </html>
