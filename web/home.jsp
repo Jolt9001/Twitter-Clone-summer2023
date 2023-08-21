@@ -63,9 +63,9 @@
                     <c:set var="id" value="${tweet.id}"/>
                     <div class="tweetHead">
                         Tweet ID: ${tweet.id}<br>
-                        <img id="pfp-${tweet.id}" src="${profileImageURL}" alt="pfp" style="display: none">
+                        <%-- <img id="pfp-${tweet.id}" src="${profileImageURL}" alt="pfp" style="display: none"> --%>
                         ${tweet.user_id}
-                        Username: ${user}
+                        <%-- Username: ${user} --%>
                     </div>
                     <div class="tweetBody">
                         ${tweet.text}
