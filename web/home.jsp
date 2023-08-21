@@ -62,7 +62,7 @@
                     <c:set var="user" value="${TweetModel.getUsername(tweet.user_id)}"/>
                     <c:set var="id" value="${tweet.id}"/>
                     <div class="tweetHead">
-                        Tweet ID: ${tweet.id}:
+                        Tweet ID: ${tweet.id} - 
                         <%-- <img id="pfp-${tweet.id}" src="${profileImageURL}" alt="pfp" style="display: none"> --%>
                         User ID: ${tweet.user_id}
                         <%-- Username: ${user} --%>
