@@ -6,6 +6,7 @@ package twitter;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author Owner
  */
+@WebServlet(name = "Profile", urlPatterns = {"/Profile"})
 public class Profile extends HttpServlet {
 
     /**
@@ -28,9 +30,10 @@ public class Profile extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        boolean loginPersist = false;
-        if (!Login.ensureLoginRedirect(request, loginPersist)) {
+        if (!Login.ensureLoginRedirect(request)) {
             request.setAttribute("message", "Please log in to continue.");
+            response.sendRedirect("Login");
+            return;
         }
         
         HttpSession session = request.getSession();

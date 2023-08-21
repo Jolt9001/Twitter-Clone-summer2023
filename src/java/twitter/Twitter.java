@@ -9,27 +9,23 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Blob;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+@WebServlet(name = "Profile", urlPatterns = {"/Profile"})
 public class Twitter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        String loginPersist = request.getParameter("loginPersist");
         response.setContentType("text/html;charset=UTF-8");
         
-        boolean login;
-        if ("true".equals(loginPersist)) {
-            login = true;
-        } else {
-            login = false;
-        }
-        
-        if (!Login.ensureLoginRedirect(request, login)) {
+        if (!Login.ensureLoginRedirect(request)) {
             request.setAttribute("message", "Please log in to continue.");
+            response.sendRedirect("Login");
+            return;
         }
         if (action == null) {
             action = "listUsers";
@@ -48,15 +44,12 @@ public class Twitter extends HttpServlet {
         } else if (action.equalsIgnoreCase("followUser")) {
             HttpSession session = request.getSession();
             int u1ID = 0;
-            int u2ID = 0;
             String u1name = (String)session.getAttribute("username");
-            String u2name = request.getParameter("followeduid");
+            String u2ID = request.getParameter("followeduid");
             User user1 = UserModel.getUser(u1name);
             u1ID = user1.getId();
-            User user2 = UserModel.getUser(u2name);
-            u2ID = user2.getId();
             
-            if (u1ID == 0 || u2ID == 0){
+            if (u1ID == 0 || u2ID == null){
                 String error = "one or both id(s) are missing";
                 request.setAttribute("error", error);
                 String url = "/error.jsp";
@@ -64,7 +57,7 @@ public class Twitter extends HttpServlet {
             }
 
             try {
-                Follow follow = new Follow(0, 0, u2ID);
+                Follow follow = new Follow(0, u1ID, Integer.parseInt(u2ID));
                 FollowModel.addFollow(follow);
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
@@ -158,11 +151,13 @@ public class Twitter extends HttpServlet {
                     likes = TweetModel.likeTweet(tweet);
                     request.setAttribute("likes", likes);
                 }
+                request.setAttribute("action", null);
+                String url = "/home.jsp";
+                getServletContext().getRequestDispatcher(url).forward(request, response);
             }
         }
         String url = "/home.jsp";
         getServletContext().getRequestDispatcher(url).forward(request, response);
-        //response.sendRedirect(url);
     }
 
     public void exceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

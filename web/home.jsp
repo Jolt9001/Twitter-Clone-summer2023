@@ -43,7 +43,14 @@
                             <form action="Twitter" method="post">
                                 <input id="pointer" type="hidden" name="action" value="followUser">
                                 <input type="hidden" name="followeduid" value="${user.id}"/>
-                                <input id="follow" type="submit" value="Follow User" onClick="switchFollow(this)"/>
+                                <c:if test="${FollowModel.isFollowing(loggedInUserId, user.id)}">
+                                    <!-- User is following, display "Unfollow User" button -->
+                                    <input id="follow-${user.id}" type="submit" value="Unfollow User" onClick="switchFollow(this)"/>
+                                </c:if>
+                                <c:if test="${!FollowModel.isFollowing(loggedInUserId, user.id)}">
+                                    <!-- User is not following, display "Follow User" button -->
+                                    <input id="follow-${user.id}" type="submit" value="Follow User" onClick="switchFollow(this)"/>
+                                </c:if>
                             </form>
                         </td>
                     </tr>

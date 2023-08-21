@@ -109,27 +109,10 @@ public class Login extends HttpServlet {
         getServletContext().getRequestDispatcher(url).forward(request, response);
     }
     
-    public static boolean ensureLoginRedirect(HttpServletRequest request, boolean isLoggedIn){
+    public static boolean ensureLoginRedirect(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        String sessionUsername = (String)session.getAttribute("username");
-        String sessionPassword = (String)session.getAttribute("password");
-        
-        if (isLoggedIn = true) {
-            return true;
-        }
-        String message = "";
-        if (sessionPassword == null) {
-            message = "Your session has expired. Please log in again.";
-            request.setAttribute("message", message);
-            return false;
-        }
-        User user = UserModel.getUser(sessionUsername);
-        if(user == null){
-            message = "You don't appear to be logged in. Please log in again.";
-            request.setAttribute("message", message);
-            return false;
-        }
-        return isLoggedIn = true;
+        String sessionUserName = (String)session.getAttribute("username");
+        return sessionUserName != null;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

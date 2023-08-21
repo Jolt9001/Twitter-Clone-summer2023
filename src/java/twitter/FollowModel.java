@@ -78,7 +78,31 @@ public class FollowModel {
         return id;
     }
     
-    public static void ensureLoginRedirect(HttpServletRequest request, boolean isLoggedIn) {
-        Login.ensureLoginRedirect(request, isLoggedIn);
+    public static boolean isFollowing(int uid1, int uid2) {
+        boolean isFollowing = false;
+        try {
+            Connection c = DBConnection.getConnection();
+            String query = "select id from following where followedbyuid = ? and followeduid = ?";
+            
+            PreparedStatement s = c.prepareStatement(query);
+            s.setInt(1, uid1);
+            s.setInt(2, uid2);
+            ResultSet r = s.executeQuery();
+            
+            if (r.next()){
+                isFollowing = true;
+            }
+            
+            r.close();
+            s.close();
+            c.close();
+        } catch (Exception ex){
+            System.out.println(ex);
+        }
+        return isFollowing;
+    }
+    
+    public static void ensureLoginRedirect(HttpServletRequest request) {
+        Login.ensureLoginRedirect(request);
     }
 }
