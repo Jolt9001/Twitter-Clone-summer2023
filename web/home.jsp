@@ -2,7 +2,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<script type="text/javascript">
+<%-- <script type="text/javascript">
     function switchFollow() {
         var elem = document.getElementById("pointer").onclick;
         if (elem.value == "followUser") {
@@ -13,7 +13,7 @@
             elem.action = "followUser";
         }
     }
-</script>
+</script> --%>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -43,14 +43,11 @@
                             <form action="Twitter" method="post">
                                 <input id="pointer" type="hidden" name="action" value="followUser">
                                 <input type="hidden" name="followeduid" value="${user.id}"/>
-                                <c:if test="${FollowModel.isFollowing(loggedInUserId, user.id)}">
-                                    <!-- User is following, display "Unfollow User" button -->
-                                    <input id="follow-${user.id}" type="submit" value="Unfollow User" onClick="switchFollow(this)"/>
-                                </c:if>
-                                <c:if test="${!FollowModel.isFollowing(loggedInUserId, user.id)}">
-                                    <!-- User is not following, display "Follow User" button -->
-                                    <input id="follow-${user.id}" type="submit" value="Follow User" onClick="switchFollow(this)"/>
-                                </c:if>
+                                <input id="follow-${user.id}" type="submit" value="Follow User" onClick="switchFollow(this)"/>
+                                
+                                <input id="pointer" type="hidden" name="action" value="unfollowUser">
+                                <input type="hidden" name="followeduid" value="${user.id}"/>
+                                <input id="follow-${user.id}" type="submit" value="Unfollow User" onClick="switchFollow(this)"/>
                             </form>
                         </td>
                     </tr>

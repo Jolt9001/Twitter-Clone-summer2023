@@ -15,6 +15,7 @@ public class User implements Serializable {
     private String username;
     private String password;
     private String filename;
+    private boolean isFollowing;
 
     public User(int id, String username, String password) {
         this.id = id;
@@ -60,5 +61,13 @@ public class User implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+    
+    public boolean setFollowing(boolean isFollowing) {
+        return isFollowing;
+    }
+    
+    public void getFollowing(int uid1, int uid2) {
+        this.isFollowing = FollowModel.isFollowing(uid1, uid2);
     }
 }

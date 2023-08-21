@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet(name = "Profile", urlPatterns = {"/Profile"})
+@WebServlet(name = "Twitter", urlPatterns = {"/Twitter"})
 public class Twitter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -25,7 +25,6 @@ public class Twitter extends HttpServlet {
         if (!Login.ensureLoginRedirect(request)) {
             request.setAttribute("message", "Please log in to continue.");
             response.sendRedirect("Login");
-            return;
         }
         if (action == null) {
             action = "listUsers";
@@ -36,9 +35,17 @@ public class Twitter extends HttpServlet {
         if (action.equalsIgnoreCase("listUsers")) {
             HttpSession session = request.getSession();
             String username = (String)session.getAttribute("username");
-            
             ArrayList<User> users = UserModel.getUsersSansCurrent(username);
+            ArrayList<Boolean> flags = new ArrayList<>();
+            int u1ID = UserModel.getUser(username).getId();
+            for (User user : users) {
+                boolean isFollowing = FollowModel.isFollowing(u1ID, user.getId());
+                flags.add(isFollowing);
+            }
+            
+            request.setAttribute("flags", flags);
             request.setAttribute("users", users);
+            
             action = "listTweets";
             request.setAttribute("action", action);
         } else if (action.equalsIgnoreCase("followUser")) {
@@ -59,6 +66,7 @@ public class Twitter extends HttpServlet {
             try {
                 Follow follow = new Follow(0, u1ID, Integer.parseInt(u2ID));
                 FollowModel.addFollow(follow);
+                response.sendRedirect("Twitter");
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             } 
@@ -85,6 +93,8 @@ public class Twitter extends HttpServlet {
                 Follow f = new Follow(followID, u1ID, Integer.parseInt(u2ID));
                 
                 FollowModel.unfollow(f);
+                
+                response.sendRedirect("Twitter");
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             } 
@@ -97,8 +107,11 @@ public class Twitter extends HttpServlet {
         if (action.equalsIgnoreCase("listTweets")) {
             ArrayList<Tweet> tweets = TweetModel.getAllTweets();
             request.setAttribute("tweets", tweets);
-            action = "listUsers";
-            request.setAttribute("action", action);
+            
+            request.setAttribute("action", null);
+            
+            String url = "/home.jsp";
+            getServletContext().getRequestDispatcher(url).forward(request, response);
         } else if (action.equalsIgnoreCase("createTweet")) {
             String text = request.getParameter("text");
             String filename = request.getParameter("filename");
@@ -129,8 +142,8 @@ public class Twitter extends HttpServlet {
                     Tweet tweet = new Tweet(0, text, null, user.getId(), 0);
                     TweetModel.createTweet(tweet, false);
                 }
-                action = "listUsers";
-                request.setAttribute("action", action);
+                request.setAttribute("action", null);
+                response.sendRedirect("Twitter");
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             }
@@ -151,13 +164,11 @@ public class Twitter extends HttpServlet {
                     likes = TweetModel.likeTweet(tweet);
                     request.setAttribute("likes", likes);
                 }
-                request.setAttribute("action", null);
-                String url = "/home.jsp";
-                getServletContext().getRequestDispatcher(url).forward(request, response);
+                response.sendRedirect("Twitter");
             }
+        } else {
+            response.sendRedirect("UserManager");
         }
-        String url = "/home.jsp";
-        getServletContext().getRequestDispatcher(url).forward(request, response);
     }
 
     public void exceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -106,33 +106,36 @@ public class UserModel {
     
     public static ArrayList<User> getUsersSansCurrent(String currentUsername) {
         ArrayList<User> userList = new ArrayList<>();
+        boolean isFollowing = false;
         try {
             Connection connection = DBConnection.getConnection();
-            String query = "select id, username, filename from user where username != ?";
+            String sQuery = "select id, username, filename from user where username != ?";
             
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, currentUsername);
+            PreparedStatement sStatement = connection.prepareStatement(sQuery);
+            sStatement.setString(1, currentUsername);
             
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSet sResult = sStatement.executeQuery();
             
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String username = resultSet.getString("username");
-                String filename = resultSet.getString("filename");
+            while (sResult.next()) {
+                int id = sResult.getInt("id");
+                String username = sResult.getString("username");
+                String filename = sResult.getString("filename");
 
                 User user = new User(id, username, "", filename);
-                
+
                 userList.add(user);
             }
             
-            resultSet.close();
-            preparedStatement.close();
+            sResult.close();
+            sStatement.close();
+            
+            
+            
             connection.close();
             
         } catch (Exception ex) {
             System.out.println(ex);
         }
-
         return userList;
     }
     
