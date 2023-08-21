@@ -105,8 +105,6 @@ public class UserManager extends HttpServlet {
             User user = new User(Integer.parseInt(id), "", "");
             UserModel.deleteUser(user);
             
-            HttpSession session = request.getSession();
-            
             response.sendRedirect("UserManager");
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);

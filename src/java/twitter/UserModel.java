@@ -25,8 +25,6 @@ public class UserModel {
             ResultSet results = statement.executeQuery();
             String password = "";
             if (results.next()) {
-                int id = results.getInt("id");
-                String username = results.getString("username");
                 password = results.getString("password");
             }
             
@@ -52,9 +50,10 @@ public class UserModel {
             
             statement.setString(1, username);
             
-            ResultSet results = statement.executeQuery(query);
+            ResultSet results = statement.executeQuery();
+            System.out.println("");
             
-            while (results.next()) {
+            if (results.next()) {
                 int id = results.getInt("id");
                 String password = results.getString("password");
                 String filename = results.getString("filename");
@@ -162,7 +161,7 @@ public class UserModel {
         try {
             Connection connection = DBConnection.getConnection();
             
-            String query = "update `user` set username = ?, password  = ? where id = ?";
+            String query = "update user set username = ?, password  = ? where id = ?";
             
             PreparedStatement statement = connection.prepareStatement(query);
             
@@ -192,7 +191,6 @@ public class UserModel {
             statement.execute();
             statement.close();
             connection.close();
-            
         } 
         catch (Exception ex){
             System.out.println(ex);

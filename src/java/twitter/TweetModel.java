@@ -128,9 +128,9 @@ public class TweetModel {
             String query;
 
             if (hasAttachment) {
-                query = "insert into tweet (text, user_id, attachment, filename) values (?, ?, ?, ?)";
+                query = "insert into `tweet` (text, user_id, attachment, filename) values (?, ?, ?, ?)";
             } else {
-                query = "insert into tweet (text, user_id) values (?, ?)";
+                query = "insert into `tweet` (text, user_id) values (?, ?)";
             }
 
             PreparedStatement statement = connection.prepareStatement(query);
@@ -149,6 +149,43 @@ public class TweetModel {
             connection.close();
         } catch (Exception ex) {
             System.out.println(ex);
+        }
+    }
+    
+    public static int likeTweet(Tweet tweet) {
+        int likes = 0;
+        try {
+            Connection connection = DBConnection.getConnection();
+            String selectQuery = "select likes from tweet where id = ?";
+            
+            PreparedStatement selStatement = connection.prepareStatement(selectQuery);
+            
+            selStatement.setInt(1, tweet.getId());
+            
+            ResultSet results = selStatement.executeQuery();
+            System.out.println("break");
+            
+            if (results.next()) {
+                likes = results.getInt("likes");
+            }
+            selStatement.close();
+            results.close();
+            
+            String updateQuery = "update tweet set likes = ? where id = ?";
+            PreparedStatement upStatement = connection.prepareStatement(updateQuery);
+            
+            upStatement.setInt(1, likes + 1);
+            upStatement.setInt(2, tweet.getId());
+            
+            upStatement.executeUpdate();
+            
+            upStatement.close();
+            connection.close();
+            
+            return likes + 1;
+        } catch (Exception ex) {
+            String test = ex.toString();
+            return likes;
         }
     }
 }

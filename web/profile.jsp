@@ -26,9 +26,8 @@
     <c:forEach var="tweet" items="${tweets}">
         <article class="tweet">
             <div class="tweetHead">
-                <img src="GetTweet/id${tweet.id}">
+                <img src="GetTweet/id=${tweet.id}">
                 <p>${tweet.user.GetUsername()}</p>
-                
             </div>
             <div class="tweetBody">
                 <p>${text}</p>

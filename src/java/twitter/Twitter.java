@@ -2,7 +2,6 @@
 package twitter;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -19,12 +18,19 @@ public class Twitter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        boolean loginPersist = false;
-
-        if (!Login.ensureLoginRedirect(request, loginPersist)) {
-            request.setAttribute("message", "Please log in to continue.");
+        String loginPersist = request.getParameter("loginPersist");
+        response.setContentType("text/html;charset=UTF-8");
+        
+        boolean login;
+        if ("true".equals(loginPersist)) {
+            login = true;
+        } else {
+            login = false;
         }
         
+        if (!Login.ensureLoginRedirect(request, login)) {
+            request.setAttribute("message", "Please log in to continue.");
+        }
         if (action == null) {
             action = "listUsers";
             request.setAttribute("action", action);
@@ -37,10 +43,20 @@ public class Twitter extends HttpServlet {
             
             ArrayList<User> users = UserModel.getUsersSansCurrent(username);
             request.setAttribute("users", users);
+            action = "listTweets";
+            request.setAttribute("action", action);
         } else if (action.equalsIgnoreCase("followUser")) {
-            String u1ID = request.getParameter("followedbyuid");
-            String u2ID = request.getParameter("followinguid");
-            if (u1ID == null || u2ID == null){
+            HttpSession session = request.getSession();
+            int u1ID = 0;
+            int u2ID = 0;
+            String u1name = (String)session.getAttribute("username");
+            String u2name = request.getParameter("followeduid");
+            User user1 = UserModel.getUser(u1name);
+            u1ID = user1.getId();
+            User user2 = UserModel.getUser(u2name);
+            u2ID = user2.getId();
+            
+            if (u1ID == 0 || u2ID == 0){
                 String error = "one or both id(s) are missing";
                 request.setAttribute("error", error);
                 String url = "/error.jsp";
@@ -48,23 +64,48 @@ public class Twitter extends HttpServlet {
             }
 
             try {
-                Follow follow = new Follow(0, Integer.parseInt(u1ID), Integer.parseInt(u2ID));
+                Follow follow = new Follow(0, 0, u2ID);
+                FollowModel.addFollow(follow);
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             } 
-            
         } else if (action.equalsIgnoreCase("unfollowUser")) {
+            HttpSession session = request.getSession();
+            String sessionUser = (String)session.getAttribute("username");
+            String u2ID = request.getParameter("followeduid");
             
+            User user = UserModel.getUser(sessionUser);
+            int u1ID = user.getId();
+            
+            request.setAttribute("u1ID", u1ID);
+            
+            if (u1ID == 0 || u2ID == null){
+                String error = "one or both id(s) are missing";
+                request.setAttribute("error", error);
+                String url = "/error.jsp";
+                getServletContext().getRequestDispatcher(url).forward(request, response);
+            }
+            
+            try {
+                int followID = FollowModel.getFollow(u1ID, Integer.parseInt(u2ID));
+                
+                Follow f = new Follow(followID, u1ID, Integer.parseInt(u2ID));
+                
+                FollowModel.unfollow(f);
+            } catch (Exception ex) {
+                exceptionPage(ex, request, response);
+            } 
+        } 
+            
+        if (action == "listUsers"){
+            action = "listTweets";
         }
         
-        // Tweets section
-        
-        // set action to "listTweets"
-        action = "listTweets";
-        request.setAttribute("action", action);
         if (action.equalsIgnoreCase("listTweets")) {
             ArrayList<Tweet> tweets = TweetModel.getAllTweets();
             request.setAttribute("tweets", tweets);
+            action = "listUsers";
+            request.setAttribute("action", action);
         } else if (action.equalsIgnoreCase("createTweet")) {
             String text = request.getParameter("text");
             String filename = request.getParameter("filename");
@@ -95,13 +136,33 @@ public class Twitter extends HttpServlet {
                     Tweet tweet = new Tweet(0, text, null, user.getId(), 0);
                     TweetModel.createTweet(tweet, false);
                 }
+                action = "listUsers";
+                request.setAttribute("action", action);
             } catch (Exception ex) {
                 exceptionPage(ex, request, response);
             }
+        } else if (action.equalsIgnoreCase("likeTweet")) {
+            String idSt = (String)request.getParameter("tweet_id");
+            String like = (String)request.getParameter("likes");
+            if (idSt == "" || like == "" || idSt == null || like == null) {
+                String error = "null pointer or empty string exception.";
+                request.setAttribute("error", error);
+                String url = "/error.jsp";
+                getServletContext().getRequestDispatcher(url).forward(request, response);
+            } else {
+                int id = Integer.parseInt(idSt);
+                Tweet tweet = TweetModel.getTweet(id);
+
+                int likes = Integer.parseInt(like);
+                if (tweet != null) {
+                    likes = TweetModel.likeTweet(tweet);
+                    request.setAttribute("likes", likes);
+                }
+            }
         }
-        
         String url = "/home.jsp";
         getServletContext().getRequestDispatcher(url).forward(request, response);
+        //response.sendRedirect(url);
     }
 
     public void exceptionPage(Exception ex, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

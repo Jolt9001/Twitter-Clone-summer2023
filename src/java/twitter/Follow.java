@@ -11,12 +11,12 @@ package twitter;
 public class Follow {
     private int id;
     private int followedbyuid;
-    private int followinguid;
+    private int followeduid;
 
-    public Follow(int id, int followedbyuid, int followinguid) {
+    public Follow(int id, int followedbyuid, int followeduid) {
         this.id = id;
         this.followedbyuid = followedbyuid;
-        this.followinguid = followinguid;
+        this.followeduid = followeduid;
     }
 
     public int getId() {
@@ -27,7 +27,11 @@ public class Follow {
         return followedbyuid;
     }
 
-    public int getFollowinguid() {
-        return followinguid;
+    public int getFolloweduid() {
+        return followeduid;
+    }
+
+    public void setFollowedbyuid(int followedbyuid) {
+        this.followedbyuid = followedbyuid;
     }
 }
