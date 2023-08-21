@@ -64,7 +64,7 @@
                     <div class="tweetHead">
                         Tweet ID: ${tweet.id}<br>
                         <%-- <img id="pfp-${tweet.id}" src="${profileImageURL}" alt="pfp" style="display: none"> --%>
-                        ${tweet.user_id}
+                        User ID: ${tweet.user_id}
                         <%-- Username: ${user} --%>
                     </div>
                     <div class="tweetBody">
